@@ -6,6 +6,7 @@ import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.io.jvm.AudioDispatcherFactory;
 import org.javapython.SpeechRecognizerV2;
+import org.javapython.SpeechRecognizerV3;
 
 import javax.sound.sampled.*;
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class SoundLevelDetector {
     Converter cnv = new Converter();
 
     // SpeechRecognition Model
-    SpeechRecognizerV2 sr;
+    SpeechRecognizerV3 sr;
 
     // Threshold passed for first ti,e
     boolean firstRec = false;
@@ -36,7 +37,7 @@ public class SoundLevelDetector {
     public void monitorMicAudio() {
 
         // Load a SpeechRecognizer model
-        sr = new SpeechRecognizerV2();
+        sr = new SpeechRecognizerV3();
 
         try {
             // Recorded material to analyze using SR
@@ -105,7 +106,7 @@ public class SoundLevelDetector {
 
                             // Ask for response
                             String chatBotResponse = "Peter, you a great person.";
-
+                            sr.textToSpeech(chatBotResponse,"/Users/lorispodevyn/Documents/JavaBook/SpeechRecognition/tts_Loris.wav");
                             // Generate the .WAV
 
                             // Play the .WAV, but only continue with the program one second after the .wav finished
