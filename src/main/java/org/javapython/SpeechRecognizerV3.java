@@ -88,6 +88,7 @@ public class SpeechRecognizerV3 {
         }
     }
 
+
     public void close() {
         try {
             // Send EOF to indicate we're done

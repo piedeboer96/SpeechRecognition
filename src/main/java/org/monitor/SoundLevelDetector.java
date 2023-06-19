@@ -7,6 +7,7 @@ import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.io.jvm.AudioDispatcherFactory;
 import org.javapython.SpeechRecognizerV2;
 import org.javapython.SpeechRecognizerV3;
+import org.utils.Utils;
 
 import javax.sound.sampled.*;
 import java.io.IOException;
@@ -105,8 +106,7 @@ public class SoundLevelDetector {
                             // Send text to ChatBot
 
                             // Ask for response
-                            String chatBotResponse = "Peter, you a great person.";
-                            sr.textToSpeech(chatBotResponse,"/Users/lorispodevyn/Documents/JavaBook/SpeechRecognition/tts_Loris.wav");
+
                             // Generate the .WAV
 
                             // Play the .WAV, but only continue with the program one second after the .wav finished
@@ -115,7 +115,12 @@ public class SoundLevelDetector {
                             conversation.push(transcribedText);
                             recordedBuffers.clear();
 
-                            //
+                            // TTS
+                            String chatBotResponse = "Peter, you a great person.";
+                            String outputPath = "/Users/lorispodevyn/Documents/JavaBook/SpeechRecognition/tts_Loris.wav";
+                            sr.textToSpeech(chatBotResponse,outputPath);
+                            Utils.playWav(outputPath);
+                            
 
 
                         } catch (IOException e) {

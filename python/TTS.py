@@ -18,5 +18,6 @@ speech.save(mp3_path)
 # Convert mp3 to wav using pydub
 sound = AudioSegment.from_mp3(mp3_path)
 sound.export(output_file_path, format="wav")
+#os.system("afplay " + output_file_path)
 # Remove the temporary mp3 file
 os.remove(mp3_path)
