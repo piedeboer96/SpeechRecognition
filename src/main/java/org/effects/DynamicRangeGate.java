@@ -1,6 +1,6 @@
 package org.effects;
 
-import org.monitor.SoundPressureLevel;
+import org.effects.SoundPressureLevel;
 
 /**
  * Dynamic Range Gate with variable release time and

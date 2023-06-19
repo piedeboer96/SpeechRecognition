@@ -1,5 +1,9 @@
 package org.javapython;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 
 public class SpeechRecognizerV3 {
@@ -87,7 +91,6 @@ public class SpeechRecognizerV3 {
             e.printStackTrace();
         }
     }
-
 
     public void close() {
         try {

@@ -5,8 +5,8 @@ import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.io.jvm.AudioDispatcherFactory;
-import org.javapython.SpeechRecognizerV2;
 import org.javapython.SpeechRecognizerV3;
+import org.utils.Converter;
 import org.utils.Utils;
 
 import javax.sound.sampled.*;
@@ -16,6 +16,9 @@ import java.util.Arrays;
 import java.util.Stack;
 
 public class SoundLevelDetector {
+
+    // MicMonitoring
+    boolean micMonitor;
 
     // History of transcribed text
     Stack<String> conversation = new Stack<>();
@@ -35,6 +38,7 @@ public class SoundLevelDetector {
     // Silence counter (extra gate control)
     long silenceCounter = 10;
 
+    // Threshold (VAD) based recording
     public void monitorMicAudio() {
 
         // Load a SpeechRecognizer model
@@ -120,7 +124,7 @@ public class SoundLevelDetector {
                             String outputPath = "/Users/lorispodevyn/Documents/JavaBook/SpeechRecognition/tts_Loris.wav";
                             sr.textToSpeech(chatBotResponse,outputPath);
                             Utils.playWav(outputPath);
-                            
+
 
 
                         } catch (IOException e) {
@@ -142,6 +146,80 @@ public class SoundLevelDetector {
             e.printStackTrace();
         }
     }
+
+
+    // Create dispatcher for mic
+    public AudioDispatcher makeDispatcher() throws LineUnavailableException {
+        // Define the mic as input stream of audio
+        AudioFormat format = new AudioFormat(44100, 16, 1, true, false);
+        TargetDataLine line = AudioSystem.getTargetDataLine(format);
+        line.open(format);
+        line.start();
+
+        // Use AudioDispatcher for block size 1024
+        int overlap = 0;
+        AudioDispatcher dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(BLOCK_SIZE, overlap);
+
+        return dispatcher;
+    }
+
+
+
+    // Engage recording using GUI Button & return a string
+    public String record() throws LineUnavailableException, IOException {
+
+        // Make dispatcher
+        AudioDispatcher dispatcher = makeDispatcher();
+
+        // Recorded material to analyze using SR
+        ArrayList<float[]> recordedBuffers = new ArrayList<>();
+
+        // Load a SpeechRecognizer model
+        sr = new SpeechRecognizerV3();
+
+        while(micMonitor){
+
+                //
+                dispatcher.addAudioProcessor(new AudioProcessor() {
+
+                    float[] processedBuffer = new float[BLOCK_SIZE];
+
+                    @Override
+                    public boolean process(AudioEvent audioEvent) {
+                        // Current buffer
+                        float[] audioBuffer = audioEvent.getFloatBuffer();
+
+                        // Apply the gate
+                        processedBuffer = gate.process(audioBuffer);
+
+                        // Append the recorded list
+                        recordedBuffers.add(Arrays.copyOf(processedBuffer, processedBuffer.length));
+
+                        return true;
+                    }
+
+                    @Override
+                    public void processingFinished() {
+
+                    }
+                });
+
+                new Thread(dispatcher::run).start();
+
+            }
+
+        // Transcribe
+
+        // Make .WAV
+        cnv.makeWAV(recordedBuffers);
+
+        // Transcribe
+        String transcription  = sr.transcribe("out16.wav");
+
+        return transcription;
+    }
+
+
 
     public void close() {
         sr.close();
